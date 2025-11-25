@@ -3,6 +3,7 @@ name = "cyan-backend-integrations"
 version = "0.0.1"
 edition = "2024"
 description = "Backend integrations with Slack, Confluence, github, JIRA and much more"
+license-file = "LICENSE"
 
 [[bin]]
 name = "cyan-cli"
