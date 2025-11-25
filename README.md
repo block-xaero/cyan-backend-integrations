@@ -88,4 +88,4 @@ Each integration runs as an independent actor with:
 - Shared node cache for deduplication
 
 ## License
-Copyright (c) Blockxaero
+Copyright (c) Blockxaero Inc. All rights reserved.
