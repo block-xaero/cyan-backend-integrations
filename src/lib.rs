@@ -317,7 +317,7 @@ impl IntegrationManager {
         let actor = SlackActor::new(
             token,
             workspace_id.clone(),
-            Duration::from_secs(30),
+            Duration::from_secs(5),
             cmd_rx,
             event_tx,
             node_tx,
@@ -779,8 +779,18 @@ pub fn current_timestamp() -> u64 {
 
 // Helper function for extracting context around a position in text
 pub fn extract_context(text: &str, position: usize, context_size: usize) -> String {
-    let start = position.saturating_sub(context_size);
-    let end = (position + context_size).min(text.len());
+    // Find valid char boundary for start
+    let mut start = position.saturating_sub(context_size);
+    while start > 0 && !text.is_char_boundary(start) {
+        start -= 1;
+    }
+
+    // Find valid char boundary for end
+    let mut end = (position + context_size).min(text.len());
+    while end < text.len() && !text.is_char_boundary(end) {
+        end += 1;
+    }
+
     text[start..end].to_string()
 }
 

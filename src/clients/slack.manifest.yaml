@@ -1,0 +1,26 @@
+display_information:
+  name: Cyan
+  description: Collaborative whiteboard with integrated team communications
+  background_color: "#00CED1"
+
+features:
+  bot_user:
+    display_name: Cyan
+    always_online: true
+
+oauth_config:
+  redirect_urls:
+    - http://localhost:8080/oauth/slack/callback
+  scopes:
+    bot:
+      - channels:history
+      - channels:read
+      - groups:history
+      - groups:read
+      - users:read
+      - team:read
+
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

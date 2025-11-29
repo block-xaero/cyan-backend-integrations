@@ -89,6 +89,7 @@ pub struct ChannelListResponse {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Message {
     pub text: String,
+    #[serde(default)]
     pub user: String,
     pub ts: String,
     pub thread_ts: Option<String>,
@@ -174,8 +175,14 @@ impl SlackClient {
         }
 
         let response = req.send().await?;
-        let data: T = response.json().await?;
-        Ok(data)
+
+        // Get raw text first
+        let text = response.text().await?;
+        println!("🔍 Slack API [{}] response: {}", endpoint, &text[..text.len().min(500)]);
+
+        // Parse from text
+        serde_json::from_str(&text)
+            .map_err(|e| SlackError::Parse(e))
     }
 
     async fn make_post_request<T: for<'de> Deserialize<'de>>(
@@ -268,7 +275,6 @@ impl SlackClient {
         let response: MessageHistory = self
             .make_get_request("conversations.history", Some(params))
             .await?;
-
         if !response.ok {
             return Err(SlackError::Api(format!("Failed to get messages for channel {}", channel_id)));
         }
