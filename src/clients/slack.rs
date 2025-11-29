@@ -363,6 +363,36 @@ impl SlackClient {
 
         Ok(response.user)
     }
+
+    pub async fn get_messages_since(
+        &self,
+        channel_id: &str,
+        oldest: Option<&str>,
+        limit: Option<&str>,
+    ) -> Result<MessageHistory, SlackError> {
+        let mut params = HashMap::new();
+        params.insert("channel", channel_id);
+        params.insert("limit", limit.unwrap_or("100"));
+
+        // Use `oldest` to only get messages after this timestamp
+        // This is more reliable than cursor for incremental polling
+        if let Some(ts) = oldest {
+            params.insert("oldest", ts);
+        }
+
+        let response: MessageHistory = self
+            .make_get_request("conversations.history", Some(params))
+            .await?;
+
+        if !response.ok {
+            return Err(SlackError::Api(format!(
+                "Failed to get messages for channel {}",
+                channel_id
+            )));
+        }
+
+        Ok(response)
+    }
 }
 
 #[cfg(test)]
